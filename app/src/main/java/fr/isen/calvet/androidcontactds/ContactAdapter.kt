@@ -1,5 +1,6 @@
 package fr.isen.calvet.androidcontactds
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ class ContactAdapter(var list: ArrayList<HomeActivity.Contact>) : RecyclerView.A
         val contactFirstName : TextView = view.findViewById(R.id.firstname)
         val contactLastName : TextView = view.findViewById(R.id.lastname)
         val contactAddress : TextView = view.findViewById(R.id.address)
+        val contactAddressGlobal : TextView = view.findViewById(R.id.city)
         val contactEmail : TextView = view.findViewById(R.id.email)
     }
 
@@ -23,9 +25,10 @@ class ContactAdapter(var list: ArrayList<HomeActivity.Contact>) : RecyclerView.A
 
     override fun onBindViewHolder(holder: ContactViewHolder, position: Int) {
         val contact = list[position]
-        holder.contactFirstName.text = contact.firstname
-        holder.contactLastName.text = contact.lastname
-        holder.contactAddress.text = contact.address
+        holder.contactFirstName.text = contact.name.first
+        holder.contactLastName.text = contact.name.last
+        holder.contactAddress.text = "${contact.location.street.number} ${contact.location.street.name}"
+        holder.contactAddressGlobal.text = "${contact.location.city} ${contact.location.state} ${contact.location.country}"
         holder.contactEmail.text = contact.email
     }
 
