@@ -1,5 +1,6 @@
 package fr.isen.calvet.androidcontactds
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -43,11 +44,19 @@ class HomeActivity : AppCompatActivity() {
             Request.Method.GET, url, jsonObject, {
                 val gson = GsonBuilder().create()
                 val results = gson.fromJson(it.toString(), Results::class.java)
-                Log.w("Results", "resp : ${results.results}")
+                //Log.w("Results", "resp : ${results.results}")
                 val contactList = results.results
                 for(contacts in results.results) {
                     binding.recyclerView.layoutManager = LinearLayoutManager(this)
-                    binding.recyclerView.adapter = ContactAdapter(contactList)
+                    binding.recyclerView.adapter = ContactAdapter(contactList) {
+                        val intent = Intent(this, ContactDetailActivity::class.java)
+                        intent.putExtra("Image", it.picture.medium)
+                        intent.putExtra("Name", it.name.first + " " + it.name.last.uppercase())
+                        intent.putExtra("Address", "${it.location.street.number}  ${it.location.street.name}")
+                        intent.putExtra("Email", it.email)
+                        intent.putExtra("Mobile", it.cell)
+                        startActivity(intent)
+                    }
                 }
             }, {
                 Log.w("HomeActivity", "erreur : $it")
@@ -66,7 +75,9 @@ class HomeActivity : AppCompatActivity() {
     data class Contact(
         var name : ContactName,
         var location : Location,
-        var email : String
+        var email : String,
+        var cell : String,
+        var picture : Picture
     )
 
     data class ContactName(
@@ -77,12 +88,16 @@ class HomeActivity : AppCompatActivity() {
     data class Location(
         var street : StreetNumber,
         var city : String,
-        var state : String,
-        var country: String
+        var state : String
     )
 
     data class StreetNumber(
         var number : Int,
         var name : String
+    )
+
+    data class Picture(
+        var medium : String,
+        var thumbnail : String
     )
 }
